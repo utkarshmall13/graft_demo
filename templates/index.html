@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>GRAFT Demo</title>
+    <!-- Include Leaflet CSS and JavaScript -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <!-- Include Roboto font from Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <!-- <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script> -->
+    <!-- <script src="https://unpkg.com/@asymmetrik/leaflet-d3@4/dist/leaflet-d3.js"></script> -->
+    <!-- Include custom css and javascript -->
+    <link rel="stylesheet" href="../static/styles.css" />
+    <script src="../static/scripts.js" defer></script>
+</head>
+
+<body>
+    <div id="full-container">
+        <div id="left-container">
+            <h1>GRAFT Demo</h1>
+            <select id="stateDropdown">
+                <option value="austria">Austria</option>
+                <option value="NY">New York</option>
+                <option value="MA" selected>Massachusetts</option>
+                <option value="MN" selected>Minnesota</option>
+            </select>
+            <form id="search">
+                <input type="text" id="userInput" name="userInput" placeholder="Query" required autocomplete="off" />
+                <div id="submit">
+                    <button id="submit-btn" type="submit">Submit</button>
+                    <reset-button id="reset-btn">
+                        Reset
+                    </reset-button>
+                </div>
+            </form>
+
+            <div id="threshold-container"> Threshold [-1 to 1]
+                <input type="range" id="threshold" name="threshold" min="-1" max="1" step="0.01" value="1" required>
+                <output for="threshold" id="thresholdValue">0.05</output>
+            </div>
+
+            <div id="k-container"> Show Matches [0 to 200]
+                <input type="range" id="k" name="k" min="0" max="200" step="1" value="20" required>
+                <output for="k" id="kValue">20</output>
+            </div>
+
+            <div id="toggle-container">
+                <toggle-button id="toggle-heatmap-btn">
+                    Toggle Probability Density
+                </toggle-button>
+            </div>
+        </div>
+
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="loading-icon">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
