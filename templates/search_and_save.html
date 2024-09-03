@@ -14,11 +14,12 @@
     <script src="https://unpkg.com/leaflet-draw"></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script> -->
     <!-- <script src="https://unpkg.com/@asymmetrik/leaflet-d3@4/dist/leaflet-d3.js"></script> -->
     <!-- Include custom css and javascript -->
     <link rel="stylesheet" href="../static/styles.css" />
-    <script src="../static/scripts.js" defer></script>
+    <script src="../static/scripts_sas.js" defer></script>
 </head>
 
 <body>
@@ -26,10 +27,10 @@
         <div id="left-container">
             <h1>GRAFT Demo</h1>
             <select id="stateDropdown">
-                <option value="austria">Austria</option>
-                <option value="NY">New York</option>
+                <!-- <option value="austria">Austria</option>
+                <option value="NY">New York</option> -->
                 <option value="MA" selected>Massachusetts</option>
-                <option value="MN" selected>Minnesota</option>
+                <!-- <option value="MN" selected>Minnesota</option> -->
             </select>
             <form id="search">
                 <input type="text" id="userInput" name="userInput" placeholder="Query" required autocomplete="off" />
@@ -40,6 +41,14 @@
                     </reset-button>
                 </div>
             </form>
+
+            <div class="search">
+                <div class="submit">
+                    <button class="search-btn" id="search-btn">Search Area</button>
+                    <br>
+                    <button class="search-btn" id="save-btn">Save</button>
+                </div>
+            </div>
 
             <div id="threshold-container"> Threshold [-1 to 1]
                 <input type="range" id="threshold" name="threshold" min="-1" max="1" step="0.01" value="1" required>
@@ -56,14 +65,6 @@
                     Toggle Probability Density
                 </toggle-button>
             </div>
-            <div id="search-and-save">
-                <redirect-btn class="redirect-btn">
-                <a href="/search_and_save" id="search-and-save-btn">
-                    Search and Save
-                </a>
-                <!-- Search -->
-                </redirect-btn>  
-            </div> 
         </div>
 
         <div id="map-container">

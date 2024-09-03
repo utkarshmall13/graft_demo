@@ -9,6 +9,7 @@ OPENSTREETMAP = "https://*.tile.openstreetmap.org"
 CORNELL = "https://research.cs.cornell.edu"
 METADATA = 'https://cv.cs.columbia.edu/utkarsh/GRAFTDemoMetadata'
 DATA = "data:"
+JQUERY = "https://code.jquery.com"
 
 config = {
     "DEBUG": True,
@@ -23,6 +24,8 @@ csp = {
         SELF,
         UNPKG,
         f"{STATIC}/scripts.js",
+        f"{STATIC}/scripts_sas.js",
+        JQUERY,
     ],
     "style-src": [
         SELF,

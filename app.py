@@ -31,7 +31,8 @@ talisman = Talisman(app, content_security_policy=csp, content_security_policy_no
 # Initialize the models when the app starts
 with app.app_context():
     # CHANGE THIS LINE BELOW TO LOAD OTHER STATES
-    states = ["MA", "NY", "MN", 'austria']
+    # states = ["MA", "NY", "MN", 'austria']
+    states = ["MA"]
     app.config["models"] = initialize_models(states)
     app.config["images"] = load_images([f"features/{state}_2020.txt" for state in states])
 
@@ -60,13 +61,20 @@ def high_prob_points(top_locs, state):
     return points
 
 
-def classify(query, thresh=0.05, state="MA"):
+def classify(query, thresh=0.05, state="MA", nesw=None):
     feats, locs, device, textmodel, tokenizer = app.config["models"][state]
+
+    # filter by bounding box
+    if nesw is not None:
+        condition = (locs[:, 1] < nesw[0]) & (locs[:, 1] > nesw[2]) & (locs[:, 0] < nesw[1]) & (locs[:, 0] > nesw[3])
+        locs = locs[condition]
+        feats = feats[condition]
+
     with torch.no_grad():
         textsenc = tokenizer([query], padding=True, return_tensors="pt").to(device)
         class_embeddings = F.normalize(textmodel(**textsenc).text_embeds, dim=-1)
 
-    classprob = feats @ class_embeddings.cpu().numpy().T
+    classprob = feats @ class_embeddings.cpu().numpy().T    
     condition = classprob[:, 0] > thresh
     filtered_locs = locs[condition]
 
@@ -74,7 +82,13 @@ def classify(query, thresh=0.05, state="MA"):
     swapped_points = swapped_points.tolist()
     top_locs = locs[np.argsort(classprob[:, -1])[::-1]]
     top_points = high_prob_points(top_locs, state)
-
+    if nesw is not None:
+        inds = np.argsort(classprob[:, -1])[::-1]
+        if len(classprob) > 10000:
+            inds = inds[:10000]
+        classprob = classprob[inds]
+        locs = locs[inds]    
+        return swapped_points, top_points, np.concatenate([locs, classprob], axis=1)
     return swapped_points, top_points
 
 
@@ -146,6 +160,39 @@ def classified_points():
         thresh=thresh, blue_coords=list_of_blue_points, top_locs=top_locs[: int(max_points)]
     )
 
+@app.route("/search_and_save")
+def search_and_save():
+    return render_template("search_and_save.html")
+
+@app.route("/classified-bounded-points")
+def classified_bounded_points():
+    # get params
+    query = request.args.get("query")
+    thresh = request.args.get("thresh")
+    max_points = request.args.get("k")
+    print(max_points)
+    state = request.args.get("state")
+    ne = request.args.get("ne")
+    sw = request.args.get("sw")
+    print(query, thresh, max_points, state, ne, sw)
+    # get stored params
+    prev_query = session.get("prev_query")
+    prev_state = session.get("prev_state")
+    if prev_query != query or prev_state != state or thresh is None:
+        thresh = get_threshold_from_query(query)
+    thresh = float(thresh)
+
+    # set session
+    session["prev_query"] = query
+    session["prev_state"] = state
+
+    # Fetch Results
+    nesw = [float(ne.split(",")[0]), float(ne.split(",")[1]), float(sw.split(",")[0]), float(sw.split(",")[1])]
+    list_of_blue_points, top_locs, scores = classify(query, thresh, state, nesw)
+    scores = scores.tolist()
+    return make_response(
+        thresh=thresh, blue_coords=list_of_blue_points, top_locs=top_locs[: int(max_points)], scores=scores
+    )
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)

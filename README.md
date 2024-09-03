@@ -30,3 +30,9 @@ This guide provides detailed instructions on how to set up, run, and deploy the 
     ```
 - **Note:** The first time you run this, it will download a bunch of metadata. Make sure you have alteast 30 GBs of space.
 - The application will be accessible at `http://localhost:8080/`.
+
+# Update (09/03/24)
+## Applications:
+- Visiting `http://127.0.0.1:8080/search_and_save` now allows for searching within a bounding box and saving resultant scores.
+- If the number of satellite images in the search bounding box is larger than 10000, it will save the highest scoring 10000 images.
+- Otherwise, it returns a json file with all images and their corresponding scores.
